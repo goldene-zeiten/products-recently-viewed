@@ -1,0 +1,17 @@
+<div class="recently-viewed-products">
+    <h2><f:translate key="recently_viewed" /></h2>
+    <f:if condition="{products}">
+        <f:then>
+            <div class="row">
+                <f:for each="{products}" as="product">
+                    <div class="col-md-4">
+                        <f:render partial="Product/ListItem" arguments="{product: product}" />
+                    </div>
+                </f:for>
+            </div>
+        </f:then>
+        <f:else>
+            <p><f:translate key="recently_viewed_empty" /></p>
+        </f:else>
+    </f:if>
+</div>

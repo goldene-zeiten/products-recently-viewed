@@ -1,0 +1,9 @@
+"tt_content",,,,,,,,,
+,"uid","pid","sorting","deleted","colPos","CType","header","tx_products_recentlyviewed_mode"
+,300,2,256,0,0,"productsrecentlyviewed_recentlyviewed","Recently Viewed","recent"
+,301,2,256,0,0,"productsrecentlyviewed_recentlyviewed","My Most Viewed","mostviewed"
+,302,2,256,0,0,"productsrecentlyviewed_recentlyviewed","Site Most Viewed","mostviewedglobal"
+
+"fe_users",,,,,
+,"uid","pid","disable","deleted","username"
+,1,2,0,0,"viewer-a"

@@ -1,0 +1,21 @@
+"fe_users",,,,
+,"uid","username","password","email"
+,10,"user1","hash1","user1@example.com"
+,20,"user2","hash2","user2@example.com"
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,100,1,0,"Product A"
+,110,1,0,"Product B"
+"sys_products_visited_products",,,,
+,"uid","pid","qty","tstamp"
+,100,0,5,1000000
+,110,0,3,1000001
+"sys_products_fe_users_mm_visited_products",,,,
+,"uid","pid","uid_local","uid_foreign","qty","tstamp","deleted"
+,1,0,10,100,2,1000010,0
+,2,0,10,110,1,1000011,0
+,3,0,20,100,4,1000020,0
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",100,"tx_products_domain_model_product",100
+,"tt_products",110,"tx_products_domain_model_product",110

@@ -1,0 +1,46 @@
+{
+  "name": "goldene-zeiten/products-recently-viewed",
+  "description": "Recently-viewed and most-viewed product tracking for the Products TYPO3 shop system",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+    "goldene-zeiten/products-core": "^1.0",
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "typo3/cms-extbase": "^13.4 || ^14.3",
+    "typo3/cms-fluid": "^13.4 || ^14.3",
+    "typo3/cms-frontend": "^13.4 || ^14.3",
+    "typo3/cms-install": "^13.4 || ^14.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\RecentlyViewed\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GoldeneZeiten\\Products\\RecentlyViewed\\Tests\\": "Tests/"
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "products_recently_viewed",
+      "version": "1.0.0",
+      "Package": {
+        "providesPackages": {}
+      }
+    },
+    "branch-alias": {
+      "dev-main": "1.0.x-dev"
+    }
+  }
+}

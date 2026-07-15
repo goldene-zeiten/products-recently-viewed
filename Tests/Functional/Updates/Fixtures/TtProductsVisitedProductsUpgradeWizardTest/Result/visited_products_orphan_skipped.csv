@@ -1,0 +1,8 @@
+"tx_products_visitedproduct",,,,
+,"product","view_count","last_viewed"
+,100,5,1000000
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",100,"tx_products_domain_model_product",100
+,"sys_products_visited_products",100,"tx_products_visitedproduct",100
+,"sys_products_visited_products",999,"tx_products_visitedproduct",0

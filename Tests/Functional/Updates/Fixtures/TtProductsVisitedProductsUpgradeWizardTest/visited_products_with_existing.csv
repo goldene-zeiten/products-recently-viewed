@@ -1,0 +1,15 @@
+"fe_users",,,,
+,"uid","username","password","email"
+,10,"user1","hash1","user1@example.com"
+"tx_products_domain_model_product",,,,
+,"uid","pid","hidden","title"
+,100,1,0,"Product A"
+"tx_products_visitedproduct",,,,
+,"product","view_count","last_viewed"
+,100,3,900000
+"sys_products_visited_products",,,,
+,"uid","pid","qty","tstamp"
+,100,0,5,1000000
+"tx_products_migration_map",,,,
+,"legacy_table","legacy_uid","local_table","local_uid"
+,"tt_products",100,"tx_products_domain_model_product",100

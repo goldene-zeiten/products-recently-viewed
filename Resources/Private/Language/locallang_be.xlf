@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_recently_viewed/Resources/Private/Language/locallang_be.xlf" date="2026-07-15T02:00:00Z" product-name="products_recently_viewed">
+		<header/>
+		<body>
+			<trans-unit id="plugin.recently_viewed" resname="plugin.recently_viewed">
+				<source>Recently Viewed Products</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode" resname="tt_content.tx_products_recentlyviewed_mode">
+				<source>Recently Viewed Mode</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.recent" resname="tt_content.tx_products_recentlyviewed_mode.recent">
+				<source>My recently viewed</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.mostviewed" resname="tt_content.tx_products_recentlyviewed_mode.mostviewed">
+				<source>My most viewed</source>
+			</trans-unit>
+			<trans-unit id="tt_content.tx_products_recentlyviewed_mode.mostviewedglobal" resname="tt_content.tx_products_recentlyviewed_mode.mostviewedglobal">
+				<source>Site-wide most viewed</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

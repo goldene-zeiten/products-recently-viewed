@@ -1,0 +1,11 @@
+settings:
+  products.recentlyViewed.limit:
+    type: int
+    default: 10
+    label: 'LLL:EXT:products_recently_viewed/Resources/Private/Language/locallang_settings.xlf:setting.products.recentlyViewed.limit'
+    category: discovery
+  products.mostViewed.limit:
+    type: int
+    default: 10
+    label: 'LLL:EXT:products_recently_viewed/Resources/Private/Language/locallang_settings.xlf:setting.products.mostViewed.limit'
+    category: discovery

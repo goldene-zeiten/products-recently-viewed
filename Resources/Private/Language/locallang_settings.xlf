@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:products_recently_viewed/Resources/Private/Language/locallang_settings.xlf" date="2026-07-15T02:00:00Z" product-name="products_recently_viewed">
+		<header/>
+		<body>
+			<trans-unit id="setting.products.recentlyViewed.limit" resname="setting.products.recentlyViewed.limit">
+				<source>Maximum number of recently-viewed products remembered per visitor</source>
+			</trans-unit>
+			<trans-unit id="setting.products.mostViewed.limit" resname="setting.products.mostViewed.limit">
+				<source>Maximum number of products shown in the site-wide/per-shopper "most viewed" listings</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

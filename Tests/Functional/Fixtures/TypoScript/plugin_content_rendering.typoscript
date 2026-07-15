@@ -1,0 +1,10 @@
+// Renders this extension's plugin as a content element in functional tests.
+tt_content.productsrecentlyviewed_recentlyviewed =< lib.contentElement
+tt_content.productsrecentlyviewed_recentlyviewed {
+    templateName = Generic
+    20 = EXTBASEPLUGIN
+    20 {
+        extensionName = ProductsRecentlyViewed
+        pluginName = RecentlyViewed
+    }
+}

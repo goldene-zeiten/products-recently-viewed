@@ -1,0 +1,4 @@
+name: goldene-zeiten/products-recently-viewed
+label: Products Recently Viewed
+dependencies:
+  - goldene-zeiten/products-core
