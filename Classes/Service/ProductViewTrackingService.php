@@ -40,13 +40,16 @@ final class ProductViewTrackingService
     public function getMostViewed(int $limit): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_SITE_WIDE);
-        $productUids = $queryBuilder->select('product')
+        $result = $queryBuilder->select('product')
             ->from(self::TABLE_SITE_WIDE)
             ->orderBy('view_count', 'DESC')
             ->setMaxResults($limit)
-            ->executeQuery()
-            ->fetchFirstColumn();
-        return $this->resolveProducts(array_map('intval', $productUids));
+            ->executeQuery();
+        $productUids = [];
+        while (($product = $result->fetchOne()) !== false) {
+            $productUids[] = (int)$product;
+        }
+        return $this->resolveProducts($productUids);
     }
 
     /**
@@ -59,14 +62,17 @@ final class ProductViewTrackingService
             return [];
         }
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_PER_USER);
-        $productUids = $queryBuilder->select('product')
+        $result = $queryBuilder->select('product')
             ->from(self::TABLE_PER_USER)
             ->where($queryBuilder->expr()->eq('frontend_user', $queryBuilder->createNamedParameter($frontendUser, Connection::PARAM_INT)))
             ->orderBy('view_count', 'DESC')
             ->setMaxResults($limit)
-            ->executeQuery()
-            ->fetchFirstColumn();
-        return $this->resolveProducts(array_map('intval', $productUids));
+            ->executeQuery();
+        $productUids = [];
+        while (($product = $result->fetchOne()) !== false) {
+            $productUids[] = (int)$product;
+        }
+        return $this->resolveProducts($productUids);
     }
 
     private function incrementSiteWide(int $productUid): void
