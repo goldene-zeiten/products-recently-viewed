@@ -1,3 +1,9 @@
+# The list sizes join the core catalog settings, which the plugin below inherits.
+plugin.tx_productscore.settings {
+    recentlyViewed.limit = {$products.recentlyViewed.limit}
+    mostViewed.limit = {$products.mostViewed.limit}
+}
+
 plugin.tx_productsrecentlyviewed {
     view {
         templateRootPaths {

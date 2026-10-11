@@ -1,0 +1,11 @@
+# Defaults for the classic static template, named like the site settings of the recently-viewed site set.
+products {
+    recentlyViewed {
+        # cat=products/discovery; type=int; label=Number of products the recently-viewed list keeps
+        limit = 10
+    }
+    mostViewed {
+        # cat=products/discovery; type=int; label=Number of products the most-viewed list shows
+        limit = 10
+    }
+}
