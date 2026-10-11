@@ -7,6 +7,7 @@ namespace GoldeneZeiten\Products\RecentlyViewed\EventListener;
 use GoldeneZeiten\Products\Core\Event\ProductViewedEvent;
 use GoldeneZeiten\Products\RecentlyViewed\Service\ProductViewTrackingService;
 use GoldeneZeiten\Products\RecentlyViewed\Service\RecentlyViewedStorage;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 /**
@@ -19,6 +20,7 @@ final readonly class RecordProductViewListener
     public function __construct(
         private RecentlyViewedStorage $recentlyViewedStorage,
         private ProductViewTrackingService $productViewTrackingService,
+        private LoggerInterface $logger,
     ) {}
 
     #[AsEventListener]
@@ -30,6 +32,14 @@ final readonly class RecordProductViewListener
         }
 
         $this->recentlyViewedStorage->record($event->getRequest(), $productUid);
-        $this->productViewTrackingService->record($event->getRequest(), $productUid);
+        try {
+            $this->productViewTrackingService->record($event->getRequest(), $productUid);
+        } catch (\Throwable $exception) {
+            // A view counter is statistics; failing to count must never cost the visitor the product page.
+            $this->logger->warning('Could not count a product view.', [
+                'product' => $productUid,
+                'exception' => $exception,
+            ]);
+        }
     }
 }

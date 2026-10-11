@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\RecentlyViewed\Service;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use GoldeneZeiten\Products\Core\Domain\Model\Product;
 use GoldeneZeiten\Products\Core\Domain\Repository\ProductRepository;
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
@@ -77,40 +78,63 @@ final class ProductViewTrackingService
 
     private function incrementSiteWide(int $productUid): void
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_SITE_WIDE);
-        $affectedRows = $queryBuilder->update(self::TABLE_SITE_WIDE)
-            ->set('view_count', $queryBuilder->quoteIdentifier('view_count') . ' + 1', false)
-            ->set('last_viewed', time())
-            ->where($queryBuilder->expr()->eq('product', $queryBuilder->createNamedParameter($productUid, Connection::PARAM_INT)))
-            ->executeStatement();
-        if ($affectedRows === 0) {
-            $this->connectionPool->getConnectionForTable(self::TABLE_SITE_WIDE)->insert(self::TABLE_SITE_WIDE, [
-                'product' => $productUid,
-                'view_count' => 1,
-                'last_viewed' => time(),
-            ]);
-        }
+        $this->increment(self::TABLE_SITE_WIDE, [
+            'product' => $productUid,
+        ]);
     }
 
     private function incrementForUser(int $frontendUser, int $productUid): void
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_PER_USER);
-        $affectedRows = $queryBuilder->update(self::TABLE_PER_USER)
-            ->set('view_count', $queryBuilder->quoteIdentifier('view_count') . ' + 1', false)
-            ->set('last_viewed', time())
-            ->where(
-                $queryBuilder->expr()->eq('frontend_user', $queryBuilder->createNamedParameter($frontendUser, Connection::PARAM_INT)),
-                $queryBuilder->expr()->eq('product', $queryBuilder->createNamedParameter($productUid, Connection::PARAM_INT))
-            )
-            ->executeStatement();
-        if ($affectedRows === 0) {
-            $this->connectionPool->getConnectionForTable(self::TABLE_PER_USER)->insert(self::TABLE_PER_USER, [
-                'frontend_user' => $frontendUser,
-                'product' => $productUid,
-                'view_count' => 1,
-                'last_viewed' => time(),
-            ]);
+        $this->increment(self::TABLE_PER_USER, [
+            'frontend_user' => $frontendUser,
+            'product' => $productUid,
+        ]);
+    }
+
+    /**
+     * Counts a view on the counter row identified by $identity, creating the row on a first view. Two first
+     * views of the same product can race: both find no row to update and both insert. The loser's insert
+     * hits the primary key, and its view is counted on the row the winner created instead.
+     *
+     * @param array<string, int> $identity
+     */
+    private function increment(string $table, array $identity): void
+    {
+        if ($this->updateCounter($table, $identity) > 0) {
+            return;
         }
+        $connection = $this->connectionPool->getConnectionForTable($table);
+        try {
+            // Inside an outer transaction this becomes a savepoint, so the failed insert does not leave a
+            // PostgreSQL transaction aborted for the update that follows.
+            $connection->transactional(static fn(Connection $connection): int => (int)$connection->insert(
+                $table,
+                $identity + [
+                    'view_count' => 1,
+                    'last_viewed' => time(),
+                ]
+            ));
+        } catch (UniqueConstraintViolationException) {
+            $this->updateCounter($table, $identity);
+        }
+    }
+
+    /**
+     * @param array<string, int> $identity
+     */
+    private function updateCounter(string $table, array $identity): int
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
+        $queryBuilder->update($table)
+            ->set('view_count', $queryBuilder->quoteIdentifier('view_count') . ' + 1', false)
+            ->set('last_viewed', time());
+        foreach ($identity as $field => $value) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value, Connection::PARAM_INT))
+            );
+        }
+
+        return (int)$queryBuilder->executeStatement();
     }
 
     /**

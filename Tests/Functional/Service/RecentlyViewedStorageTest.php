@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace GoldeneZeiten\Products\RecentlyViewed\Tests\Functional\Service;
 
-use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use GoldeneZeiten\Products\RecentlyViewed\Service\RecentlyViewedStorage;
 use GoldeneZeiten\Products\Testing\AbstractFunctionalTestCase;
-use GoldeneZeiten\Products\Testing\FixtureConfigurationManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
@@ -30,8 +28,8 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
     #[DataProvider('loadOrderProvider')]
     public function loadReflectsTheRecordedOrder(int $limit, array $recordedUids, array $expectedOrder): void
     {
-        $storage = $this->subject(limit: $limit);
-        $request = $this->request();
+        $storage = $this->get(RecentlyViewedStorage::class);
+        $request = $this->request()->withAttribute('site', $this->site($limit, false));
 
         foreach ($recordedUids as $uid) {
             $storage->record($request, $uid);
@@ -52,8 +50,9 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
     #[DataProvider('recordingIsSkippedProvider')]
     public function recordingIsSkippedInVariousScenarios(bool $requireCookieConsent, bool $sessionlessRequest): void
     {
-        $storage = $this->subject(requireCookieConsent: $requireCookieConsent);
-        $request = $sessionlessRequest ? new ServerRequest('http://localhost/') : $this->request();
+        $storage = $this->get(RecentlyViewedStorage::class);
+        $request = ($sessionlessRequest ? new ServerRequest('http://localhost/') : $this->request())
+            ->withAttribute('site', $this->site(10, $requireCookieConsent));
 
         $storage->record($request, 1);
 
@@ -69,27 +68,36 @@ final class RecentlyViewedStorageTest extends AbstractFunctionalTestCase
     #[Test]
     public function recordingSucceedsWhenCookieConsentIsRequiredAndAlreadyConfirmed(): void
     {
-        $storage = $this->subject(requireCookieConsent: true);
-        $request = $this->requestWithConfirmedCookie();
+        $storage = $this->get(RecentlyViewedStorage::class);
+        $request = $this->requestWithConfirmedCookie()->withAttribute('site', $this->site(10, true));
 
         $storage->record($request, 1);
 
         $this->assertSame([1], $storage->load($request));
     }
 
-    private function subject(int $limit = 10, bool $requireCookieConsent = false): RecentlyViewedStorage
+    #[Test]
+    public function withoutASiteTheDefaultLimitApplies(): void
     {
-        return new RecentlyViewedStorage(
-            $this->get(FrontendUserResolver::class),
-            $this->fakeConfigurationManager($limit, $requireCookieConsent)
-        );
+        $storage = $this->get(RecentlyViewedStorage::class);
+        $request = $this->request();
+
+        foreach (range(1, 12) as $uid) {
+            $storage->record($request, $uid);
+        }
+
+        $this->assertSame([12, 11, 10, 9, 8, 7, 6, 5, 4, 3], $storage->load($request));
     }
 
-    private function fakeConfigurationManager(int $limit, bool $requireCookieConsent): ConfigurationManagerInterface
+    private function site(int $limit, bool $requireCookieConsent): Site
     {
-        return new FixtureConfigurationManager([
-            'recentlyViewed' => ['limit' => $limit],
-            'session' => ['requireCookieConsent' => $requireCookieConsent],
+        return new Site('products', 1, [
+            'settings' => [
+                'products' => [
+                    'recentlyViewed' => ['limit' => $limit],
+                    'session' => ['requireCookieConsent' => $requireCookieConsent],
+                ],
+            ],
         ]);
     }
 

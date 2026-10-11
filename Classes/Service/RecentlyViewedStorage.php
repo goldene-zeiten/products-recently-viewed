@@ -6,7 +6,7 @@ namespace GoldeneZeiten\Products\RecentlyViewed\Service;
 
 use GoldeneZeiten\Products\Core\Service\FrontendUserResolver;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
@@ -19,8 +19,7 @@ final class RecentlyViewedStorage
     private const DEFAULT_LIMIT = 10;
 
     public function __construct(
-        private readonly FrontendUserResolver $frontendUserResolver,
-        private readonly ConfigurationManagerInterface $configurationManager
+        private readonly FrontendUserResolver $frontendUserResolver
     ) {}
 
     public function record(ServerRequestInterface $request, int $productUid): void
@@ -68,12 +67,11 @@ final class RecentlyViewedStorage
 
     private function requiresCookieConsent(ServerRequestInterface $request): bool
     {
-        $this->configurationManager->setRequest($request);
-        $settings = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'ProductsCore'
-        );
-        return (bool)($settings['session']['requireCookieConsent'] ?? false);
+        $site = $request->getAttribute('site');
+        if (!$site instanceof SiteInterface) {
+            return false;
+        }
+        return (bool)$site->getSettings()->get('products.session.requireCookieConsent', false);
     }
 
     /**
@@ -87,11 +85,10 @@ final class RecentlyViewedStorage
 
     private function limit(ServerRequestInterface $request): int
     {
-        $this->configurationManager->setRequest($request);
-        $settings = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'ProductsCore'
-        );
-        return max(1, (int)($settings['recentlyViewed']['limit'] ?? self::DEFAULT_LIMIT));
+        $site = $request->getAttribute('site');
+        if (!$site instanceof SiteInterface) {
+            return self::DEFAULT_LIMIT;
+        }
+        return max(1, (int)$site->getSettings()->get('products.recentlyViewed.limit', self::DEFAULT_LIMIT));
     }
 }
