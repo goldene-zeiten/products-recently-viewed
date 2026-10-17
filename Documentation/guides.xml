@@ -5,7 +5,7 @@
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
                project-home="https://extensions.typo3.org/extension/products_recently_viewed/"
                typo3-core-preferred="13"
-               interlink-shortcode="products_recently_viewed"
+               interlink-shortcode="goldene-zeiten/products-recently-viewed"
     />
     <project title="Products Recently Viewed"
              release="1.0"
